@@ -27,7 +27,7 @@ const STATUS: Record<string, [string, string]> = {
 
 export function StatusBadge({ status }: { status: string }) {
   const [label, cls] = STATUS[status] ?? [status, "bg-slate-100 text-slate-600"];
-  return <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${cls}`}>{label}</span>;
+  return <span className={`inline-flex items-center whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-medium ${cls}`}>{label}</span>;
 }
 
 export function ScoreChip({ score, pass = 65 }: { score: number | null; pass?: number }) {
