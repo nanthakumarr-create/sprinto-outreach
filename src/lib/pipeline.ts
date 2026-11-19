@@ -251,6 +251,13 @@ export async function runPipeline(companyId: string, emitRaw: Emit) {
     const gates = [
       { gate: "Is B2B SaaS / software", pass: facts.is_saas !== false, detail: facts.is_saas === false ? "Facts say not SaaS" : "OK" },
       { gate: "Not a compliance-automation competitor", pass: !(q?.is_competitor || rubric.competitors.includes(domain)), detail: rubric.competitors.includes(domain) ? "On competitor list" : q?.is_competitor ? "Model flagged as competitor" : "OK" },
+      ...(rubric.min_trigger_score
+        ? [(() => {
+            const t = final.breakdown.find((b) => b.key === "compliance_trigger");
+            const ok = !t || t.score >= rubric.min_trigger_score!;
+            return { gate: `Compliance trigger ≥ ${rubric.min_trigger_score}/10`, pass: ok, detail: t ? `scored ${t.score}/10${ok ? "" : " - no reason to buy now"}` : "n/a" };
+          })()]
+        : []),
       { gate: `Not a large enterprise (≤${rubric.max_employees} staff)`, pass: !(facts.employees_estimate && facts.employees_estimate > rubric.max_employees), detail: facts.employees_estimate ? `~${facts.employees_estimate} staff` : "Headcount unknown" },
     ];
     const gatesPass = gates.every((g) => g.pass);

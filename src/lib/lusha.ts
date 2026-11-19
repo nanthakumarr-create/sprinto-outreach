@@ -66,6 +66,7 @@ export function rankContacts(contacts: LushaContact[], employees: number | null)
         [/\b(cto|chief technology)/i, "CTO usually owns the first SOC 2 audit at this size", 100],
         [/\b(ciso|chief information security|head of security|vp,? security|director.*security)/i, "Dedicated security leader owns compliance", 95],
         [/\b(compliance|grc|risk)\b/i, "Owns compliance / GRC directly", 90],
+        [/(founder.*(ceo|chief executive)|(ceo|chief executive).*founder)/i, "CEO/co-founder - signs off on audit spend; no CTO or security lead listed", 78],
         [/(co-?founder|founder)/i, "Technical/co-founder - the buyer before a security hire exists", 80],
         [/\b(vp|head|director).*(engineering)/i, "Engineering leader carries audit evidence work", 70],
         [/\bceo\b/i, "CEO signs off on audit spend at this size", 60],
@@ -75,7 +76,8 @@ export function rankContacts(contacts: LushaContact[], employees: number | null)
         [/\b(compliance|grc|risk)\b/i, "Owns compliance / GRC directly", 95],
         [/\b(cto|chief technology)/i, "CTO sponsors compliance when no CISO exists", 85],
         [/\b(vp|head|director).*(engineering)/i, "Engineering leader carries audit evidence work", 65],
-        [/(co-?founder|founder)/i, "Founder - escalation path", 55],
+        [/(founder.*(ceo|chief executive)|(ceo|chief executive).*founder)/i, "CEO/co-founder - signs off on audit spend; no CTO or security lead listed", 58],
+        [/(co-?founder|founder)/i, "Co-founder - escalation path when no security/engineering lead is listed", 55],
         [/\bceo\b/i, "CEO - last resort", 40],
       ];
   const ranked = contacts

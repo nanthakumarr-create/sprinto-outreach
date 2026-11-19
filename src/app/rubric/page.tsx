@@ -9,6 +9,7 @@ type Criterion = { key: string; label: string; weight: number; guide: string };
 type Rubric = {
   version: number;
   pass_score: number;
+  min_trigger_score?: number;
   criteria: Criterion[];
   max_employees: number;
   competitors: string[];
@@ -114,6 +115,7 @@ export default function RubricPage() {
               {(
                 [
                   ["Pass score (/100)", "pass_score"],
+                  ["Min compliance-trigger (/10)", "min_trigger_score"],
                   ["Max agent-loop rounds", "max_rounds"],
                   ["Page budget per company", "page_budget"],
                   ["Max employees (gate)", "max_employees"],
@@ -122,7 +124,7 @@ export default function RubricPage() {
               ).map(([label, k]) => (
                 <label key={k} className="flex items-center justify-between py-1.5 text-sm">
                   {label}
-                  <input type="number" value={r[k]} onChange={(e) => setR({ ...r, [k]: Number(e.target.value) })} className="w-24 rounded-md border border-line px-2 py-1 text-right outline-none focus:border-indigo-400" />
+                  <input type="number" value={r[k] ?? 0} onChange={(e) => setR({ ...r, [k]: Number(e.target.value) })} className="w-24 rounded-md border border-line px-2 py-1 text-right outline-none focus:border-indigo-400" />
                 </label>
               ))}
               {(
@@ -145,6 +147,7 @@ export default function RubricPage() {
                 <li>• Must be B2B SaaS / software</li>
                 <li>• Must not be a compliance-automation vendor (competitor)</li>
                 <li>• Must have ≤ {r.max_employees.toLocaleString()} employees</li>
+                <li>• Compliance trigger must score ≥ {r.min_trigger_score ?? 0}/10 (no reason to buy now → no email)</li>
               </ul>
               <div className="mt-4 text-[11px] font-medium uppercase tracking-wide text-muted">Competitor list</div>
               <textarea

@@ -5,6 +5,7 @@ export type Criterion = { key: string; label: string; weight: number; guide: str
 export type Rubric = {
   version: number;
   pass_score: number; // out of 100
+  min_trigger_score?: number; // compliance_trigger must reach this (0-10) - no trigger, no email
   criteria: Criterion[];
   max_employees: number;
   competitors: string[];
@@ -20,8 +21,9 @@ export type Rubric = {
  * Stored in Supabase (sprinto_rubric) so the Growth Lead can tune it without a deploy; this is only the seed.
  */
 export const DEFAULT_RUBRIC: Rubric = {
-  version: 1,
+  version: 2,
   pass_score: 65,
+  min_trigger_score: 5,
   criteria: [
     {
       key: "saas",
