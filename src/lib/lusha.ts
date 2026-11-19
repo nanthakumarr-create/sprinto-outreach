@@ -40,7 +40,8 @@ export async function findContacts(domain: string): Promise<{ contacts: LushaCon
   });
   if (!res.ok) throw new Error(`Lusha ${res.status}: ${(await res.text()).slice(0, 200)}`);
   const json = await res.json();
-  const contacts: LushaContact[] = (json.results ?? []).map((r: Record<string, any>) => ({
+  const contacts: LushaContact[] = (json.results ?? []).map(// eslint-disable-next-line @typescript-eslint/no-explicit-any -- external API payload
+    (r: Record<string, any>) => ({
     id: r.id,
     firstName: r.firstName ?? "",
     lastName: r.lastName ?? "",
