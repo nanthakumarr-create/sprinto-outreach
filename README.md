@@ -16,7 +16,7 @@ An automated cold-outreach system for Sprinto, which automates SOC 2, ISO 27001 
 | 4 | Find the contact | Lusha API + code | Lusha v3 prospecting search by domain and role titles. It returns names and titles only, with no email reveal. Results are cached for 14 days. A fixed ladder ranks people: at ≤200 staff the CTO or a technical founder comes first; above 200, a CISO, Head of Security or GRC lead. If nobody fits, the result is `NO_SUITABLE_CONTACT` and no email is sent. |
 | 5 | Pain points | Gemini | Writes 4 role-specific hypotheses, each cited to evidence. Keeps the top 2 with confidence ≥7/10. |
 | 6 | Draft + QA | Gemini writer + Gemini critic + code | Addressed by first name, with one dated hook taken from the evidence, 80-120 words (code counts) and one call to action. The critic scores it out of 10, the draft is rewritten up to 2 times, and the best version is kept. |
-| 7 | Send | Code | Gmail SMTP. **The recipient is hardcoded to `OUTREACH_TO` (my own inbox).** The email ends with a footer explaining why this company, why this person, the pain points and the hook source. |
+| 7 | Send | Code | Gmail API (OAuth refresh token saved through the `gws` CLI); Gmail SMTP with an app password as the fallback. **The recipient is hardcoded to `OUTREACH_TO` (my own inbox).** The email ends with a footer explaining why this company, why this person, the pain points and the hook source. |
 
 Every step writes to Supabase (`sprinto_runs`, `sprinto_companies`, `sprinto_events`). The rubric lives in `sprinto_rubric`, is versioned, and can be edited on the `/rubric` page.
 
@@ -37,4 +37,4 @@ Run `supabase/schema.sql` once against your Postgres database.
 
 ## Env
 
-`SUPABASE_URL`, `SUPABASE_SECRET_KEY`, `GEMINI_API_KEY`, `GEMINI_MODEL`, `EXA_API_KEY`, `LUSHA_API_KEY`, `OUTREACH_TO` (your own inbox), `GMAIL_USER`, `GMAIL_APP_PASSWORD`, `RUN_PASSCODE`, `SENDER_NAME`, `APP_URL`.
+`SUPABASE_URL`, `SUPABASE_SECRET_KEY`, `GEMINI_API_KEY`, `GEMINI_MODEL`, `EXA_API_KEY`, `LUSHA_API_KEY`, `OUTREACH_TO` (your own inbox), `GMAIL_USER`, and Gmail auth: either `GMAIL_CLIENT_ID` + `GMAIL_CLIENT_SECRET` + `GMAIL_REFRESH_TOKEN` (from `gws auth login -s gmail` then `gws auth export`) or `GMAIL_APP_PASSWORD`, `RUN_PASSCODE`, `SENDER_NAME`, `APP_URL`.

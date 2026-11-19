@@ -1,5 +1,6 @@
 import "server-only";
 import nodemailer from "nodemailer";
+import MailComposer from "nodemailer/lib/mail-composer";
 
 /**
  * SAFETY: the recipient is hardcoded from OUTREACH_TO (our own inbox). Prospect addresses are never used,
@@ -11,7 +12,8 @@ export function outreachInbox(): string {
   return to;
 }
 
-export function mailTransport(): "gmail" | "resend" | "none" {
+export function mailTransport(): "gmail-api" | "gmail" | "resend" | "none" {
+  if (process.env.GMAIL_CLIENT_ID && process.env.GMAIL_CLIENT_SECRET && process.env.GMAIL_REFRESH_TOKEN) return "gmail-api";
   if (process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD) return "gmail";
   if (process.env.RESEND_API_KEY) return "resend";
   return "none";
@@ -20,6 +22,38 @@ export function mailTransport(): "gmail" | "resend" | "none" {
 export async function sendOutreach(opts: { subject: string; text: string; html: string }) {
   const to = outreachInbox();
   const transport = mailTransport();
+  if (transport === "gmail-api") {
+    // OAuth refresh token saved by the gws CLI (`gws auth login -s gmail`, then `gws auth export`).
+    const tok = await fetch("https://oauth2.googleapis.com/token", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        client_id: process.env.GMAIL_CLIENT_ID!,
+        client_secret: process.env.GMAIL_CLIENT_SECRET!,
+        refresh_token: process.env.GMAIL_REFRESH_TOKEN!,
+        grant_type: "refresh_token",
+      }),
+    });
+    const tj = await tok.json();
+    if (!tok.ok) throw new Error(`Google token refresh failed: ${tj.error_description ?? tj.error}`);
+    const raw = await new MailComposer({
+      from: `Sprinto Outreach Bot <${process.env.GMAIL_USER || to}>`,
+      to,
+      subject: opts.subject,
+      text: opts.text,
+      html: opts.html,
+    })
+      .compile()
+      .build();
+    const res = await fetch("https://gmail.googleapis.com/gmail/v1/users/me/messages/send", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${tj.access_token}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ raw: raw.toString("base64url") }),
+    });
+    const json = await res.json();
+    if (!res.ok) throw new Error(`Gmail API ${res.status}: ${json.error?.message ?? JSON.stringify(json).slice(0, 200)}`);
+    return { id: json.id as string, transport, to };
+  }
   if (transport === "gmail") {
     const t = nodemailer.createTransport({
       service: "gmail",
@@ -50,7 +84,7 @@ export async function sendOutreach(opts: { subject: string; text: string; html: 
     if (!res.ok) throw new Error(`Resend ${res.status}: ${JSON.stringify(json).slice(0, 200)}`);
     return { id: json.id as string, transport, to };
   }
-  throw new Error("No mail transport configured (set GMAIL_APP_PASSWORD or RESEND_API_KEY)");
+  throw new Error("No mail transport configured (run gws auth login -s gmail and set GMAIL_CLIENT_ID/SECRET/REFRESH_TOKEN)");
 }
 
 /** Public pages never show the full inbox address. */

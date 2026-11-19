@@ -154,7 +154,7 @@ export default function RubricPage() {
                 className="mt-1 w-full rounded-lg border border-line px-2.5 py-2 font-mono text-xs outline-none focus:border-indigo-400"
               />
               <div className="mt-3 text-xs text-muted">
-                Mail transport: <b>{transport === "gmail" ? "Gmail (SMTP)" : transport === "resend" ? "Resend (fallback)" : "not configured"}</b>
+                Mail transport: <b>{transport === "gmail-api" ? "Gmail API (OAuth)" : transport === "gmail" ? "Gmail (SMTP)" : transport === "resend" ? "Resend (fallback)" : "not configured"}</b>
               </div>
             </div>
           </div>
