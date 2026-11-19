@@ -71,7 +71,7 @@ export function CompanyTable({ rows, loading, limit, showFilters = true }: { row
                     <Link href={`/companies/${c.id}`} className="font-medium hover:text-indigo-700">{c.name || c.domain}</Link>
                     <div className="max-w-xs truncate text-xs text-muted">{c.domain}{c.funding ? ` · ${c.funding}` : ""}</div>
                   </td>
-                  <td className="px-3 py-3"><ScoreChip score={c.score} /></td>
+                  <td className="px-3 py-3"><ScoreChip score={c.score} qualified={c.decision === "qualified"} /></td>
                   <td className="px-3 py-3">
                     {c.contact ? (<><div className="font-medium">{c.contact.name}</div><div className="max-w-48 truncate text-xs text-muted">{c.contact.title}</div></>) : <span className="text-muted">-</span>}
                   </td>
@@ -91,7 +91,7 @@ export function CompanyTable({ rows, loading, limit, showFilters = true }: { row
                     <div className="font-medium">{c.name || c.domain}</div>
                     <div className="truncate text-xs text-muted">{c.contact ? `${c.contact.name} · ${c.contact.title}` : c.domain}</div>
                   </div>
-                  <ScoreChip score={c.score} />
+                  <ScoreChip score={c.score} qualified={c.decision === "qualified"} />
                 </div>
                 <div className="mt-2 flex items-center justify-between">
                   <StepTrack compact states={statesFromStatus(c.status, c.current_step, c.decision)} />

@@ -30,9 +30,9 @@ export function StatusBadge({ status }: { status: string }) {
   return <span className={`inline-flex items-center whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-medium ${cls}`}>{label}</span>;
 }
 
-export function ScoreChip({ score, pass = 65 }: { score: number | null; pass?: number }) {
+export function ScoreChip({ score, pass = 65, qualified }: { score: number | null; pass?: number; qualified?: boolean }) {
   if (score == null) return <span className="text-muted text-sm">-</span>;
-  const ok = score >= pass;
+  const ok = qualified ?? score >= pass;
   return (
     <span className={`inline-flex min-w-11 justify-center rounded-md px-2 py-0.5 text-xs font-semibold tabular-nums ${ok ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-600"}`}>
       {score}
