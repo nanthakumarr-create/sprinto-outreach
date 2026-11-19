@@ -30,6 +30,7 @@ export type CompanyRow = {
   contact: { name: string; title: string } | null;
   subject: string | null;
   qa: number | null;
+  rubric_version: number | null;
 };
 
 const PASS_KEY = "sprinto-passcode";

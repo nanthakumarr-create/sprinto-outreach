@@ -5,7 +5,7 @@ import { exaSearch } from "./exa";
 import { scrapePage, pickPages, normalizeDomain, PageDoc } from "./scrape";
 import { findContacts, rankContacts, LushaContact } from "./lusha";
 import { loadRubric, Rubric, SPRINTO_CONTEXT } from "./rubric";
-import { sendOutreach, outreachInbox, maskEmail } from "./mailer";
+import { sendOutreach, outreachInbox, maskEmail, mailTransport } from "./mailer";
 
 export type PipelineEvent = {
   step: Step;
@@ -373,6 +373,11 @@ JSON: {"score": 1-10, "checks": {"addressed_by_name": bool, "specific_hook_from_
     emit({ step: "draft", status: "done", message: `Final: "${draft.subject}" - v${lastQA.version} chosen, QA ${lastQA.score}/10, ${lastQA.words} words (${qaHistory.length} version(s) tried)${qaPassed ? "" : " (below bar - held for review)"}` });
 
     // ---------------- 7. SEND ----------------
+    if (autoSend && qaPassed && mailTransport() === "none") {
+      await updateCompany(companyId, { status: "ready", current_step: null });
+      emit({ step: "send", status: "skip", message: "No mail transport configured yet - draft saved, send from the dashboard once Gmail is connected" });
+      return;
+    }
     if (!autoSend || !qaPassed) {
       await updateCompany(companyId, { status: "ready", current_step: null });
       emit({ step: "send", status: "skip", message: !qaPassed ? "Held for human review - QA below bar" : "Auto-send off - ready to send from the dashboard" });

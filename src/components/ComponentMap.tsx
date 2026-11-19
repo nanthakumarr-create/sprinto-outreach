@@ -21,7 +21,7 @@ const NODES: Node[] = [
   { id: "ui", x: 20, y: PY, w: 165, h: 140, kind: "ui", tag: "TRIGGER", title: "Dashboard", lines: ["Paste domains", "Passcode + Run", "Auto-send toggle", "Live step stream"] },
   { id: "scrape", x: X(0), y: PY, w: 170, h: 140, kind: "code", tag: "STEP 1", title: "Scrape", lines: ["Homepage + 3 best pages", "(security, about,", "customers, pricing)", "Strip nav/footer/cookies", "8-page budget, 3 tries"] },
   { id: "extract", x: X(1), y: PY, w: 170, h: 140, kind: "ai", tag: "STEP 2", title: "Extract", lines: ["Structured company facts", "SaaS? size, funding,", "certs, enterprise &", "compliance signals", "each with source URL"] },
-  { id: "qualify", x: X(2), y: PY, w: 170, h: 140, kind: "ai", tag: "STEP 3 · AGENT LOOP", title: "Qualify", lines: ["AI scores 5 criteria 0-10", "asks for more evidence", "(fetch page / news search)", "≤3 rounds · code sums", "weights + hard gates"] },
+  { id: "qualify", x: X(2), y: PY, w: 170, h: 140, kind: "ai", tag: "STEP 3 · AGENT LOOP", title: "Qualify", lines: ["AI scores 5 criteria 0-10", "asks for more evidence", "(fetch page / news search)", "≤3 rounds · code sums", "weights + 4 hard gates"] },
   { id: "contact", x: X(3), y: PY, w: 170, h: 140, kind: "code", tag: "STEP 4", title: "Find PoC", lines: ["Qualified only (≥65)", "Rank by role ladder:", "≤200 staff → CTO first", ">200 → CISO / GRC first", "none → NO_CONTACT stop"] },
   { id: "pains", x: X(4), y: PY, w: 170, h: 140, kind: "ai", tag: "STEP 5", title: "Pain points", lines: ["4 hypotheses for this", "person's role, each", "cited to evidence", "keep top 2 with", "confidence ≥7/10"] },
   { id: "draft", x: X(5), y: PY, w: 170, h: 140, kind: "ai", tag: "STEP 6", title: "Draft + QA", lines: ["By first name, one", "dated hook, 80-120 words", "AI critic scores /10", "rewrite ≤2× until ≥8", "best version kept"] },
@@ -174,7 +174,7 @@ export function ComponentMap() {
           Decisions are explainable: AI only scores and writes; code applies weights, gates, contact ranking, word limits and the hardcoded recipient. Every fact carries a source URL.
         </text>
         <text x={0} y={54} fontSize={11.5} fill="#475569">
-          Stops early: not SaaS / competitor / &gt;5000 staff / score &lt;65 → no contact lookup; NO_SUITABLE_CONTACT → no email; QA &lt;8 after 2 rewrites → held for human review.
+          Stops early: not SaaS / competitor / &gt;5000 staff / compliance trigger &lt;5 / score &lt;65 → no contact lookup; NO_SUITABLE_CONTACT → no email; QA &lt;8 after 2 rewrites → held for human review.
         </text>
       </g>
     </svg>
